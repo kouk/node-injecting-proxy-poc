@@ -1,0 +1,16 @@
+{
+    "replace": [
+        {
+            "select": "head",
+            "from": "Foo",
+            "to": "Bar"
+        }
+    ],
+    "inject": [
+        {
+            "select": "head",
+            "position": "end",
+            "payload": "<script type='text/javascript'>alert(\"yo, 'sup?\");</script>"
+        }
+    ]
+}
