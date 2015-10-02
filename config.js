@@ -17,7 +17,8 @@ nconf = nconf.defaults({
     'replace': [],
     'port': 80,
     'secure':false,
-    'suffix': "livelocal"
+    'suffix': "livelocal",
+    'listen': "127.0.0.1"
 });
 
 module.exports = exports = nconf

@@ -5,6 +5,7 @@ var http = require('http'),
     conf = require('./config'),
     proxy = require('./proxy'),
     port = conf.get('port'),
+    listen = conf.get('listen'),
     createServer = function() {
         if (conf.get('secure')) {
             return https.createServer({
@@ -19,5 +20,5 @@ var http = require('http'),
         }
     };
 
-console.log("Listening on: " + port);
-createServer().listen(port);
+console.log("Listening on: " + listen + ":" + port);
+createServer().listen(port, listen);
