@@ -22,15 +22,16 @@ conf.get('replace').forEach(function(r){
 
 conf.get('inject').forEach(function(i){
     var position = i.position || "end";
-    if (position != "end")
-        throw "Only 'end' position is supported in injections atm";
     selects.push({
         query: i.select,
         func: function(node){
             var ts = node.createStream();
+            if (position != "end")
+                ts.write(i.payload);
             ts.pipe(through(null, function(){
                 console.log("Injecting into " + node.name);
-                this.queue(i.payload);
+                if (position == "end")
+                    this.queue(i.payload);
                 this.queue(null);
             })).pipe(ts);
         }
