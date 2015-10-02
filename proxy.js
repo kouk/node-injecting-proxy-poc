@@ -39,6 +39,26 @@ conf.get('inject').forEach(function(i){
 });
 
 selects.push({
+    query: "link",
+    func: function(node) {
+        node.getAttribute('href', function(href) {
+            if (!href)
+                href='';
+            node.setAttribute('href', utils.replaceHref(href));
+        });
+    }
+});
+selects.push({
+    query: "script",
+    func: function(node) {
+        node.getAttribute('src', function(href) {
+            if (!href)
+                href='';
+            node.setAttribute('src', utils.replaceHref(href));
+        });
+    }
+});
+selects.push({
     query: "a",
     func: function(node) {
         node.getAttribute('href', function(href) {
