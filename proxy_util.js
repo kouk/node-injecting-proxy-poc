@@ -14,11 +14,7 @@ exports.replaceHref = function (href) {
     return r.format();
 }
 exports.createTarget = function (host) {
-    console.log("ORIG HOST: " + host);
-    console.log("SUFFIX: " + suffix());
     var host = S(host).chompRight(suffix()),
         proto = host.endsWith('.https') ? 'https' : 'http';
-    console.log("HOST: " + host);
-    console.log("PROTO: " + proto);
     return proto + '://' + host.chompRight('.' + proto).s;
 }
