@@ -27,9 +27,12 @@ conf.get('inject').forEach(function(i){
     selects.push({
         query: i.select,
         func: function(node){
-            var ts = node.createStream({outer: false});
-            ts.on('end', function(){ ts.write(i.payload); });
-            ts.pipe(ts);
+            var ts = node.createStream();
+            ts.pipe(through(null, function(){
+                console.log("Injecting into " + node.name);
+                this.queue(i.payload);
+                this.queue(null);
+            })).pipe(ts);
         }
     });
 });
