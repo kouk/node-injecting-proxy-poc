@@ -43,7 +43,7 @@ selects.push({
     func: function(node) {
         node.getAttribute('href', function(href) {
             if (!href)
-                href='';
+                return;
             node.setAttribute('href', utils.replaceHref(href));
         });
     }
@@ -51,10 +51,10 @@ selects.push({
 selects.push({
     query: "script",
     func: function(node) {
-        node.getAttribute('src', function(href) {
-            if (!href)
-                href='';
-            node.setAttribute('src', utils.replaceHref(href));
+        node.getAttribute('src', function(src) {
+            if (!src)
+                return;
+            node.setAttribute('src', utils.replaceHref(src));
         });
     }
 });
@@ -63,7 +63,7 @@ selects.push({
     func: function(node) {
         node.getAttribute('href', function(href) {
             if (!href)
-                href='';
+                return;
             node.setAttribute('href', utils.replaceHref(href));
         });
     }
