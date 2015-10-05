@@ -60,23 +60,32 @@ Now you should be able to resolve anything under the dummy `.livelocal` TLD.
 SSL Support
 -----------
 
-In order for the proxy to listen for HTTPS requests, you first need to create a
-wildcard certificate for the suffix TLD. For testing purposes you can execute
-the `makecert.sh` script found in this distribution, then import the
-`demoCA/cacert.pem` certificate in your browser:
-
-
-```
-sh ./makecert.sh
-```
-
-Then you need to add the following to your `config.json`:
+If users are going to reach the proxy over SSL then the `secure` option must be added to `config.json`:
 
 ```
 {
-    'port': 443,
     'secure': true
 }
 ```
 
-Restart the server.
+This makes sure that href's and other link attributes get correctly rewritten
+to start with `https://..`.
+
+For certificate validation to work correctly you need the user facing web
+server (such as apache or nginx) to respond with a wildcard SSL certificate for
+the suffix TLD. Ask your friendly neighborhood CA for help with this. While
+testing you can create a dummy wildcard certificate for the suffix TLD by
+executing the `makecert.sh` script found in this distribution, then import the
+`demoCA/cacert.pem` certificate in your browser or OS trusted CA list. If you
+don't have nginx/apache and want the proxy itself to listen for HTTPS requests
+then you need to add the following to your `config.json`:
+
+```
+{
+    'port': 443,
+    'ssl': true
+}
+```
+
+The server expects `certificate.pem` and `key.pem` to exist in the current
+working directory.

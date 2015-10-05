@@ -7,7 +7,7 @@ var http = require('http'),
     port = conf.get('port'),
     listen = conf.get('listen'),
     createServer = function() {
-        if (conf.get('secure')) {
+        if (conf.get('ssl')) {
             return https.createServer({
               key: fs.readFileSync(__dirname + '/key.pem'),
               cert: fs.readFileSync(__dirname + '/certificate.pem'),
