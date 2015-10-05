@@ -89,3 +89,23 @@ then you need to add the following to your `config.json`:
 
 The server expects `certificate.pem` and `key.pem` to exist in the current
 working directory.
+
+
+Making pages proxy friendly
+---------------------------
+
+Many pages will include headers to enforce certain policies which won't play nice with our hostname rewriting.
+For this reason we need to strip the headers. Currently there is no support in this code, but you can do it easily with nginx standing in front:
+
+```
+  location / {
+    proxy_pass http://127.0.0.1:8999;
+    proxy_set_header Host $host;
+    proxy_set_header X-RealIP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_read_timeout 600;
+    proxy_hide_header "Content-Security-Policy";
+    proxy_hide_header "X-Frame-Options";
+    include proxy_params;
+    }
+```
