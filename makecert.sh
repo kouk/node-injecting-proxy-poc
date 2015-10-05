@@ -1,6 +1,11 @@
 #!/bin/sh
 
 if ! [ -f certificate.pem ] ; then
-    openssl req -new -config ./openssl.cnf -nodes -keyout key.pem -out csr.pem -batch
-    openssl req -x509 -days 365 -config ./openssl.cnf  -key key.pem -in csr.pem -out certificate.pem
+    mkdir -p demoCA/private demoCA/newcerts
+    touch demoCA/index.txt
+    echo "01" > demoCA/serial
+    openssl req -x509 -new -newkey rsa:2048 -out demoCA/cacert.pem -keyout demoCA/private/cakey.pem -nodes -batch
+    openssl req -new -newkey rsa:2048 -out req.pem -keyout key.pem -nodes -reqexts v3_req_livelocal -config openssl.cnf -nodes -batch
+    openssl ca -in /tmp/req.pem -config openssl.cnf -extensions v3_req_livelocal -policy policy_anything -batch
+    cp demoCA/newcerts/01.pem certificate.pem
 fi
