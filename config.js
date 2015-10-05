@@ -17,7 +17,7 @@ nconf = nconf.defaults({
     'replace': [],
     'port': 80,
     'secure':false,
-    'suffix': "livelocal",
+    'suffix': "livelocal:8000",
     'listen': "127.0.0.1"
 });
 
