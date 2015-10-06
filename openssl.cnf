@@ -224,9 +224,9 @@ subjectAltName = @alt_names
 
 [alt_names]
 
-DNS.1 = proxy.livelocal
-DNS.2 = *.http.livelocal
-DNS.3 = *.https.livelocal
+DNS.1 = $ENV::PROXY_CN
+DNS.2 = *.http.$ENV::PROXY_SUFFIX
+DNS.3 = *.https.$ENV::PROXY_SUFFIX
 
 
 [ v3_req ]
