@@ -41,10 +41,14 @@ conf.get('inject').forEach(function(i){
 selects.push({
     query: "link",
     func: function(node) {
-        node.getAttribute('href', function(href) {
-            if (!href)
+        node.getAttribute('rel', function(rel) {
+            if (rel.indexOf('icon'))
                 return;
-            node.setAttribute('href', utils.replaceHref(href));
+            node.getAttribute('href', function(href) {
+                if (!href)
+                    return;
+                node.setAttribute('href', utils.replaceHref(href));
+            });
         });
     }
 });
