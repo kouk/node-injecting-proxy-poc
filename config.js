@@ -27,12 +27,11 @@ nconf.get('inject').forEach(function(i) {
         var p = path.resolve(i.file);
         if (!fs.existsSync(p))
             throw "Can't find file: " + i.file;
-        console.log("payload file "+ p);
+        console.log("reading payload file "+ p);
         i['payload'] = fs.readFile(p, function(e, data) {
             if (e)
                 throw e;
             i['payload'] = data;
-            console.log("payload is "+ i['payload']);
         });
         delete i['file']
     }
