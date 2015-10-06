@@ -91,6 +91,7 @@ The server expects `certificate.pem` and `key.pem` to exist in the current
 working directory.
 
 
+
 Making pages proxy friendly
 ---------------------------
 
@@ -109,3 +110,35 @@ For this reason we need to strip the headers. Currently there is no support in t
     include proxy_params;
     }
 ```
+
+Alternatively you can use the `hidden_headers` configuration key to list those headers you want removed, e.g.:
+
+```
+{
+    "hidden_headers": [
+        "X-Frame-Options",
+        "Content-Security-Policy"
+    ]
+}
+```
+
+Configuration reference
+-----------------------
+
+The following keys are available in the configuration:
+
+- `replace`: a list of replacements to be made in the text content of nodes. Each replacement is defined by:
+    - `select`: a CSS selector to match the node
+    - `from`: the string to replace
+    - `to`: the replacement string
+- `inject`: a list of injections to perform on the page's DOM. Each injection is defined by:
+    - `select`: a CSS selector to match the parent node in which to inject
+    - `position`: an optional word to determine the position of the injected node. If equal to `end` it will inject at the end, otherwise in the beginning.
+    - `payload`: the actual HTML text to inject.
+    - `file`: the name or path of a file from which to retrieve the HTML payload. Overrides `payload` if both are present.
+- `port`: the port that the proxy will listen for requests. Defaults to 80.
+- `suffix`: the suffix which will be added to href values and stripped from requests URLs. Defaults to `.livelocal:8000`
+- `secure`: if `true` the proxy will rewrite all href values to use HTTPS. Default is `false`.
+- `ssl`: if `true` the proxy will setup an HTTPS listener instead of HTTP. Default is `false`. If `true` you must have a proper `certificate.pem` and `key.pem` file in this directory.
+- `listen`: The address to bind to, default is `127.0.0.1`
+- `hidden_headers`: a list of HTTP header names which will be stripped from responses. Default is none.
