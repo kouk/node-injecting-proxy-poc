@@ -73,7 +73,7 @@ selects.push({
     }
 });
 
-app.use(require('harmon')([], selects));
+app.use(require('harmon')([], selects, true));
 
 var proxy = httpProxy.createServer();
 
