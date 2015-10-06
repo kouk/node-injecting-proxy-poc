@@ -4,6 +4,11 @@
             "select": "head",
             "from": "Foo",
             "to": "Bar"
+        },
+        {
+            "select": "body",
+            "position": "end",
+            "file": "body.inc"
         }
     ],
     "inject": [

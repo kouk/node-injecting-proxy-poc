@@ -22,4 +22,20 @@ nconf = nconf.defaults({
     'listen': "127.0.0.1"
 });
 
+nconf.get('inject').forEach(function(i) {
+    if (i.file) {
+        var p = path.resolve(i.file);
+        if (!fs.existsSync(p))
+            throw "Can't find file: " + i.file;
+        console.log("payload file "+ p);
+        i['payload'] = fs.readFile(p, function(e, data) {
+            if (e)
+                throw e;
+            i['payload'] = data;
+            console.log("payload is "+ i['payload']);
+        });
+        delete i['file']
+    }
+});
+
 module.exports = exports = nconf
