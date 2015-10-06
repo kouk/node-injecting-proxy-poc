@@ -91,6 +91,7 @@ app.use(
     console.log('proxying to ' + target);
     proxy.web(req, res, {
         target: target,
+        secure: false,
         headers: {
            host: url.parse(target).host
         }
