@@ -78,10 +78,14 @@ app.use(require('harmon')([], selects, true));
 var proxy = httpProxy.createServer();
 
 proxy.on('proxyRes', function(proxyRes) {
-    if (proxyRes.headers.location == undefined)
-        return;
-    proxyRes.headers.location = utils.replaceHref(proxyRes.headers.location);
-    console.log("redirect to: " + proxyRes.headers.location);
+    conf.get('hidden_headers').forEach(function(h) {
+        var h = h.toLowerCase();
+        delete proxyRes.headers[h];
+    });
+    if (proxyRes.headers.location != undefined) {
+        proxyRes.headers.location = utils.replaceHref(proxyRes.headers.location);
+        console.log("redirect to: " + proxyRes.headers.location);
+    }
 });
 
 app.use(

@@ -19,7 +19,8 @@ nconf = nconf.defaults({
     'secure':false,
     'ssl': false,
     'suffix': "livelocal:8000",
-    'listen': "127.0.0.1"
+    'listen': "127.0.0.1",
+    'hidden_headers': []
 });
 
 nconf.get('inject').forEach(function(i) {
