@@ -84,8 +84,10 @@ app.use(
   function (req, res) {
     if (!req.headers.host)
         throw "Host header is missing";
-    target = utils.createTarget(req.headers.host);
     console.log("request for: " + req.headers.host + req.url);
+    target = utils.createTarget(req.headers.host);
+    if (!target)
+        throw "Invalid request";
     console.log('proxying to ' + target);
     proxy.web(req, res, {
         target: target,

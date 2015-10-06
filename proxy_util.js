@@ -14,10 +14,17 @@ exports.replaceHref = function (href) {
     return r.format();
 }
 exports.createTarget = function (host) {
-    var host = S(host).chompRight(conf.get('suffix')),
-        proto = host.endsWith('.https') ? 'https' : 'http',
-        original = base32.decode(host.chompRight('.' + proto).s);
-    if (/^[A-Za-z0-9.-]+$/.test(original))
+    var protohost = S(host).chompRight(conf.get('suffix')),
+        proto = protohost.endsWith('.https') ? 'https' : 'http';
+        host = protohost.chompRight('.' + proto).s;
+    console.log(proto + " host requested: " + host)
+    if (protohost == host) {
+        console.log("Invalid proto and host");
+        return null;
+    }
+    var original = base32.decode(host);
+    console.log("decoded host: " + original);
+    if (/^[A-Za-z0-9:.-]+$/.test(original))
         return proto + '://' + original;
     return "https://invalid" + conf.get('suffix');
 }
