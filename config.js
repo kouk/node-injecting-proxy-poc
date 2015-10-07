@@ -3,20 +3,21 @@ var fs = require('fs'),
     nconf = require('nconf'),
     defaultConfigFile = __dirname + '/config.json';
 
-if (!fs.existsSync(defaultConfigFile))
-    throw "Couldn't find config file: " + defaultConfigFile;
-
 nconf.argv()
      .env({
          separator: '__',
          match: /^LIVEPROXY/
-     })
-     .file({file: defaultConfigFile});
+     });
+
 var localConfigFile = path.resolve( nconf.get( 'localconf' ) || 'config-local.json' );
 if (fs.existsSync(localConfigFile)) {
     console.log("Reading local config from: " + localConfigFile);
-    nconf = nconf.file({file: localConfigFile});
+    nconf = nconf.file('local', {file: localConfigFile});
 }
+
+if (!fs.existsSync(defaultConfigFile))
+    throw "Couldn't find config file: " + defaultConfigFile;
+nconf = nconf.file('default', {file: defaultConfigFile})
 nconf = nconf.defaults({
     'inject': [],
     'replace': [],
