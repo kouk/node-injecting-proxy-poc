@@ -25,13 +25,14 @@ conf.get('inject').forEach(function(i){
     selects.push({
         query: i.select,
         func: function(node){
-            var ts = node.createStream();
+            var ts = node.createStream(),
+                data = i.payload(conf.get('context'));
             if (position != "end")
-                ts.write(i.payload);
+                ts.write(data);
             ts.pipe(through(null, function(){
                 console.log("Injecting into " + node.name);
                 if (position == "end")
-                    this.queue(i.payload);
+                    this.queue(data);
                 this.queue(null);
             })).pipe(ts);
         }

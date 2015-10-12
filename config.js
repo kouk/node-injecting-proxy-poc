@@ -1,6 +1,7 @@
 var fs = require('fs'),
     path = require('path'),
     nconf = require('nconf'),
+    _ = require('underscore'),
     defaultConfigFile = __dirname + '/config.json';
 
 nconf.argv()
@@ -26,7 +27,8 @@ nconf = nconf.defaults({
     'ssl': false,
     'suffix': "livelocal:8000",
     'listen': "127.0.0.1",
-    'hidden_headers': []
+    'hidden_headers': [],
+    'context': {}
 });
 
 nconf.get('inject').forEach(function(i) {
@@ -35,11 +37,13 @@ nconf.get('inject').forEach(function(i) {
         if (!fs.existsSync(p))
             throw "Can't find file: " + i.file;
         console.log("reading payload file "+ p);
-        i['payload'] = fs.readFile(p, function(e, data) {
-            if (e)
-                throw e;
-            i['payload'] = data;
-        });
+        try {
+            var data = fs.readFileSync(p, 'utf8');
+            i['payload'] = _.template(data);
+        } catch (e) {
+            console.log("Error processing " + p);
+            console.log(e);
+        }
         delete i['file']
     }
 });
