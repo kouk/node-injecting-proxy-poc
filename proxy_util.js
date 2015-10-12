@@ -7,10 +7,10 @@ exports.replaceHref = function (href) {
     var r = url.parse(href, false, true),
         proto = conf.get('secure') ? 'https' : 'http';
     if (!r.host) return href;
-    r.protocol = proto;
     r.host = base32.encode(r.host);
-    r.host += "." + proto;
+    r.host += "." + S(r.protocol).chompRight(':');
     r.host += conf.get('suffix');
+    r.protocol = proto;
     return r.format();
 }
 exports.createTarget = function (host) {
