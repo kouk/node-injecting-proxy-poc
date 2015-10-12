@@ -64,6 +64,16 @@ selects.push({
     }
 });
 selects.push({
+    query: "base",
+    func: function(node) {
+        node.getAttribute('href', function(href) {
+            if (!href)
+                return;
+            node.setAttribute('href', utils.replaceHref(href));
+        });
+    }
+});
+selects.push({
     query: "a",
     func: function(node) {
         node.getAttribute('href', function(href) {
