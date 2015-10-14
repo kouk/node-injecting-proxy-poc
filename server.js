@@ -7,6 +7,7 @@ var http = require('http'),
     port = conf.get('port'),
     listen = conf.get('listen'),
     createServer = function() {
+        var the_proxy = proxy(conf);
         if (conf.get('ssl')) {
             return https.createServer({
               key: fs.readFileSync(__dirname + '/key.pem'),
@@ -14,9 +15,9 @@ var http = require('http'),
               ca: fs.readFileSync(__dirname + '/certificate.pem'),
               requestCert: false,
               rejectUnauthorized: false
-            }, require('./proxy'));
+            }, the_proxy);
         } else {
-            return http.createServer(require('./proxy'));
+            return http.createServer(the_proxy);
         }
     };
 
