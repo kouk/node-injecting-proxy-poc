@@ -29,7 +29,8 @@ nconf = nconf.defaults({
     'suffix': "livelocal:8000",
     'listen': "127.0.0.1",
     'hidden_headers': [],
-    'context': {}
+    'context': {},
+    'deactivateExternal': false
 });
 
 nconf.get('inject').forEach(function(i) {

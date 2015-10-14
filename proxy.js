@@ -80,13 +80,17 @@ module.exports = exports = function(conf) {
     selects.push({
         query: "a[href]",
         func: function(node, req, res) {
+            var host32 = req.headers.host.substr(0, req.headers.host.indexOf('.'));
             node.getAttribute('href', function(href) {
                 if (!href)
                     throw "href empty"
-                node.setAttribute('href', utils.replaceHref(href, res, proxyopts));
+                if ( href.indexOf('/') == 0 ) return;
+                var replaced = utils.replaceHref(href, res, proxyopts);
+                if (replaced.indexOf(host32) == -1 && conf.get('deactivateExternal') ) replaced = "javascript:void;"
+                node.setAttribute('href', replaced);
             });
         }
-    });
+      });
 
     app.use(require('harmon')([], selects, true));
 
@@ -124,4 +128,3 @@ module.exports = exports = function(conf) {
     );
     return app;
 };
-
