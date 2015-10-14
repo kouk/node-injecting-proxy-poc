@@ -1,3 +1,5 @@
+.envrc
+.*.sw[op]
 .DS_Store
 certificate.pem
 key.pem
