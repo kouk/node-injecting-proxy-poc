@@ -113,6 +113,7 @@ module.exports = exports = function(conf) {
         if (!target)
             throw "Invalid request";
         res['_proxy_target'] = target;
+        res['_proxy_req'] = req;
         console.log('proxying to ' + target);
         proxy.web(req, res, {
             target: target,

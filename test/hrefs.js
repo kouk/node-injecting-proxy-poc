@@ -26,7 +26,7 @@ describe('proxy_util.replaceHref()', function(){
         req = nodemock.named('req'),
         res = nodemock.named('res');
     req.headers = {host: 'foobar'}
-    res.req = req;
+    res._proxy_req = req;
     assert.equal("javascript:void;", proxy_util.replaceHref(url, res, {deactivate_external: true}))
   });
 });
