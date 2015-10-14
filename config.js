@@ -16,9 +16,10 @@ if (fs.existsSync(localConfigFile)) {
     nconf = nconf.file('local', {file: localConfigFile});
 }
 
-if (!fs.existsSync(defaultConfigFile))
-    throw "Couldn't find config file: " + defaultConfigFile;
-nconf = nconf.file('default', {file: defaultConfigFile})
+if (fs.existsSync(defaultConfigFile)) {
+    console.log("Reading config from: " + defaultConfigFile);
+    nconf = nconf.file('default', {file: defaultConfigFile})
+}
 nconf = nconf.defaults({
     'inject': [],
     'replace': [],
