@@ -3,12 +3,15 @@ var url = require('url'),
     base32 = require('base32'),
     conf = require('./config');
 
-exports.replaceHref = function (href) {
+exports.replaceHref = function (href, res) {
     var r = url.parse(href, false, true),
-        proto = conf.get('secure') ? 'https' : 'http';
+        proto = conf.get('secure') ? 'https' : 'http',
+        target_proto = r.protocol;
     if (!r.host) return href;
+    if (!target_proto)
+        target_proto = url.parse(res._proxy_target).protocol;
     r.host = base32.encode(r.host);
-    r.host += "." + S(r.protocol).chompRight(':');
+    r.host += "." + S(target_proto).chompRight(':');
     r.host += conf.get('suffix');
     r.protocol = proto;
     return r.format();

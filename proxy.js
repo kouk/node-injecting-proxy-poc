@@ -41,45 +41,45 @@ conf.get('inject').forEach(function(i){
 
 selects.push({
     query: "link",
-    func: function(node) {
+    func: function(node, req, res) {
         node.getAttribute('rel', function(rel) {
             if (rel.indexOf('icon') >= 0)
                 return;
             node.getAttribute('href', function(href) {
                 if (!href)
                     return;
-                node.setAttribute('href', utils.replaceHref(href));
+                node.setAttribute('href', utils.replaceHref(href, res));
             });
         });
     }
 });
 selects.push({
     query: "script",
-    func: function(node) {
+    func: function(node, req, res) {
         node.getAttribute('src', function(src) {
             if (!src)
                 return;
-            node.setAttribute('src', utils.replaceHref(src));
+            node.setAttribute('src', utils.replaceHref(src, res));
         });
     }
 });
 selects.push({
     query: "base",
-    func: function(node) {
+    func: function(node, req, res) {
         node.getAttribute('href', function(href) {
             if (!href)
                 return;
-            node.setAttribute('href', utils.replaceHref(href));
+            node.setAttribute('href', utils.replaceHref(href, res));
         });
     }
 });
 selects.push({
     query: "a",
-    func: function(node) {
+    func: function(node, req, res) {
         node.getAttribute('href', function(href) {
             if (!href)
                 return;
-            node.setAttribute('href', utils.replaceHref(href));
+            node.setAttribute('href', utils.replaceHref(href, res));
         });
     }
 });
@@ -107,6 +107,7 @@ app.use(
     target = utils.createTarget(req.headers.host);
     if (!target)
         throw "Invalid request";
+    res['_proxy_target'] = target;
     console.log('proxying to ' + target);
     proxy.web(req, res, {
         target: target,
