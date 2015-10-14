@@ -142,3 +142,4 @@ The following keys are available in the configuration:
 - `ssl`: if `true` the proxy will setup an HTTPS listener instead of HTTP. Default is `false`. If `true` you must have a proper `certificate.pem` and `key.pem` file in this directory.
 - `listen`: The address to bind to, default is `127.0.0.1`
 - `hidden_headers`: a list of HTTP header names which will be stripped from responses. Default is none.
+- `deactivateExternal`: replace the HREF attribute in external links with `javascript: void;`.

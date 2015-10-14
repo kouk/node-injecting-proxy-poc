@@ -8,7 +8,8 @@ module.exports = exports = function(conf) {
     var app = connect(),
         proxyopts = {
             suffix: conf.get('suffix'),
-            secure: conf.get('secure')
+            secure: conf.get('secure'),
+            deactivate_external: conf.get('deactivateExternal')
         };
 
     selects = []
@@ -80,14 +81,10 @@ module.exports = exports = function(conf) {
     selects.push({
         query: "a[href]",
         func: function(node, req, res) {
-            var host32 = req.headers.host.substr(0, req.headers.host.indexOf('.'));
             node.getAttribute('href', function(href) {
                 if (!href)
                     throw "href empty"
-                if ( href.indexOf('/') == 0 ) return;
-                var replaced = utils.replaceHref(href, res, proxyopts);
-                if (replaced.indexOf(host32) == -1 && conf.get('deactivateExternal') ) replaced = "javascript:void;"
-                node.setAttribute('href', replaced);
+                node.setAttribute('href', utils.replaceHref(href, res, proxyopts));
             });
         }
       });
@@ -96,13 +93,13 @@ module.exports = exports = function(conf) {
 
     var proxy = httpProxy.createServer();
 
-    proxy.on('proxyRes', function(proxyRes) {
+    proxy.on('proxyRes', function(proxyRes, req, res) {
         conf.get('hidden_headers').forEach(function(h) {
             var h = h.toLowerCase();
             delete proxyRes.headers[h];
         });
         if (proxyRes.headers.location != undefined) {
-            proxyRes.headers.location = utils.replaceHref(proxyRes.headers.location, proxyRes, proxyopts);
+            proxyRes.headers.location = utils.replaceHref(proxyRes.headers.location, res, proxyopts);
             console.log("redirect to: " + proxyRes.headers.location);
         }
     });

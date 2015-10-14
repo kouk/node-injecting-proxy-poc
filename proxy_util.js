@@ -13,6 +13,10 @@ exports.replaceHref = function (href, res, options) {
     r.host = base32.encode(r.host);
     r.host += "." + S(target_proto).chompRight(':');
     r.host += options.suffix;
+
+    if (options.deactivate_external && !res.req.headers.host.startsWith(r.host))
+        return "javascript:void;"
+
     r.protocol = proto;
     return r.format();
 }
