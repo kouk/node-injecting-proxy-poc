@@ -43,7 +43,7 @@ selects.push({
     query: "link",
     func: function(node) {
         node.getAttribute('rel', function(rel) {
-            if (rel.indexOf('icon'))
+            if (rel.indexOf('icon') >= 0)
                 return;
             node.getAttribute('href', function(href) {
                 if (!href)
