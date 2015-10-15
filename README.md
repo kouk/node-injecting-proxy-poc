@@ -82,10 +82,11 @@ For certificate validation to work correctly you need the user facing web
 server (such as apache or nginx) to respond with a wildcard SSL certificate for
 the suffix TLD. Ask your friendly neighborhood CA for help with this. While
 testing you can create a dummy wildcard certificate for the suffix TLD by
-executing the `makecert.sh` script found in this distribution, then import the
-`demoCA/cacert.pem` certificate in your browser or OS trusted CA list. If you
-don't have nginx/apache and want the proxy itself to listen for HTTPS requests
-then you need to add the following to your `config.json`:
+executing the `makecert.sh` script from within the `data` directory found in
+this distribution, then import the `data/demoCA/cacert.pem` certificate in your
+browser or OS trusted CA list. If you don't have nginx/apache and want the
+proxy itself to listen for HTTPS requests then you need to add the following to
+your `config.json`:
 
 ```
 {
@@ -94,9 +95,7 @@ then you need to add the following to your `config.json`:
 }
 ```
 
-The server expects `certificate.pem` and `key.pem` to exist in the current
-working directory.
-
+The server expects `certificate.pem` and `key.pem` to exist in the `data` directory.
 
 
 Making pages proxy friendly
@@ -148,7 +147,7 @@ The following keys are available in the configuration:
 - `port`: the port that the proxy will listen for requests. Defaults to 80.
 - `suffix`: the suffix which will be added to href values and stripped from requests URLs. Defaults to `.livelocal:8000`
 - `secure`: if `true` the proxy will rewrite all href values to use HTTPS. Default is `false`.
-- `ssl`: if `true` the proxy will setup an HTTPS listener instead of HTTP. Default is `false`. If `true` you must have a proper `certificate.pem` and `key.pem` file in this directory.
+- `ssl`: if `true` the proxy will setup an HTTPS listener instead of HTTP. Default is `false`. If `true` you must have a proper `certificate.pem` and `key.pem` file in the `data` directory.
 - `listen`: The address to bind to, default is `127.0.0.1`
 - `hidden_headers`: a list of HTTP header names which will be stripped from responses. Default is none.
 - `deactivateExternal`: replace the HREF attribute in external links with `javascript: void;`.

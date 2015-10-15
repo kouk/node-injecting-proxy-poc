@@ -10,9 +10,9 @@ var http = require('http'),
         var the_proxy = proxy(conf);
         if (conf.get('ssl')) {
             return https.createServer({
-              key: fs.readFileSync(__dirname + '/key.pem'),
-              cert: fs.readFileSync(__dirname + '/certificate.pem'),
-              ca: fs.readFileSync(__dirname + '/certificate.pem'),
+              key: fs.readFileSync(__dirname + '/data/key.pem'),
+              cert: fs.readFileSync(__dirname + '/data/certificate.pem'),
+              ca: fs.readFileSync(__dirname + '/data/cacert.pem'),
               requestCert: false,
               rejectUnauthorized: false
             }, the_proxy);
