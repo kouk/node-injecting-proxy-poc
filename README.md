@@ -1,8 +1,8 @@
 PoC injecting proxy
 ===================
 
-Uses [node-http-proxy](https://github.com/nodejitsu/node-http-proxy/) and,
-optionally, [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html).
+Uses [node-http-proxy][] and, for local workstation installations, [dnsmasq][]
+or some other DNS server.
 
 The server listens on a configurable port (by default 80) and proxies requests
 to hosts under a dummy top level domain, e.g. `.http.livelocal` is proxied to
@@ -12,6 +12,13 @@ to `http://google.com`. Https pages are proxied under `.https.livelocal`.
 For this to work DNS must be configured with a wildcard DNS entry so that
 anything under `.http.livelocal` and `.https.livelocal` is resolved to the
 server running the proxy.
+
+Dependencies
+------------
+
+Node v4 and higher is required. On MacOSX this is available from homebrew
+(`brew update`) and on Debian you can use the
+[nodesource APT repositories][nodesource].
 
 Quick start
 -----------
@@ -95,8 +102,10 @@ working directory.
 Making pages proxy friendly
 ---------------------------
 
-Many pages will include headers to enforce certain policies which won't play nice with our hostname rewriting.
-For this reason we need to strip the headers. Currently there is no support in this code, but you can do it easily with nginx standing in front:
+Many pages will include headers to enforce certain policies which won't play
+nice with our hostname rewriting.  For this reason we need to strip the
+headers. Currently there is no support in this code, but you can do it easily
+with nginx standing in front:
 
 ```
   location / {
@@ -143,3 +152,8 @@ The following keys are available in the configuration:
 - `listen`: The address to bind to, default is `127.0.0.1`
 - `hidden_headers`: a list of HTTP header names which will be stripped from responses. Default is none.
 - `deactivateExternal`: replace the HREF attribute in external links with `javascript: void;`.
+
+
+[node-http-proxy]: https://github.com/nodejitsu/node-http-proxy/
+[dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html "dnsmasq"
+[nodesource]: https://github.com/nodesource/distributions#deb "Nodesource APT repositories"
