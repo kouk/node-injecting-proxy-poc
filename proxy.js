@@ -2,6 +2,7 @@ var connect = require('connect'),
     httpProxy = require('http-proxy'),
     through = require('through'),
     url = require('url'),
+    _ = require('underscore'),
     utils = require('./proxy_util');
 
 module.exports = exports = function(conf) {
@@ -99,7 +100,8 @@ module.exports = exports = function(conf) {
             delete proxyRes.headers[h];
         });
         if (proxyRes.headers.location != undefined) {
-            proxyRes.headers.location = utils.replaceHref(proxyRes.headers.location, res, proxyopts);
+            var opts = _.extend({}, proxyopts, {deactivate_external: false});
+            proxyRes.headers.location = utils.replaceHref(proxyRes.headers.location, res, opts);
             console.log("redirect to: " + proxyRes.headers.location);
         }
     });
