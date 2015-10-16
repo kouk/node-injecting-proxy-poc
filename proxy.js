@@ -53,7 +53,8 @@ module.exports = exports = function(conf) {
                 node.getAttribute('href', function(href) {
                     if (!href)
                         return;
-                    node.setAttribute('href', utils.replaceHref(href, res, proxyopts));
+                    node.setAttribute('href', utils.replaceHref(
+                        href, res, _.extend({}, proxyopts, {deactivate_external: false})));
                 });
             });
         }
@@ -64,7 +65,8 @@ module.exports = exports = function(conf) {
             node.getAttribute('src', function(src) {
                 if (!src)
                     return;
-                node.setAttribute('src', utils.replaceHref(src, res, proxyopts));
+                node.setAttribute('src', utils.replaceHref(
+                    src, res, _.extend({}, proxyopts, {deactivate_external: false})));
             });
         }
     });
@@ -74,7 +76,8 @@ module.exports = exports = function(conf) {
             node.getAttribute('href', function(href) {
                 if (!href)
                     return;
-                node.setAttribute('href', utils.replaceHref(href, res, proxyopts));
+                node.setAttribute('href', utils.replaceHref(
+                    href, res, _.extend({}, proxyopts, {deactivate_external: false})));
             });
         }
     });
