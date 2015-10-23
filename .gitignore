@@ -2,8 +2,9 @@
 .*.sw[op]
 .DS_Store
 certificate.pem
-key.pem
-req.pem
+*.pem
+*.pem
+*.orig
 .sw[pomn]
 demoCA/
 node_modules/
