@@ -3,7 +3,8 @@ var connect = require('connect'),
     through = require('through'),
     url = require('url'),
     _ = require('underscore'),
-    utils = require('./proxy_util');
+    utils = require('./proxy_util'),
+    target_base32 = require('./lib/target_base32');
 
 module.exports = exports = function(conf) {
     var app = connect(),
@@ -110,15 +111,12 @@ module.exports = exports = function(conf) {
         }
     });
 
+    app.use(target_base32(proxyopts));
     app.use(
       function (req, res) {
-        if (!req.headers.host)
-            throw "Host header is missing";
-        console.log("request for: " + req.headers.host + req.url);
-        target = utils.createTarget(req.headers.host, proxyopts);
-        if (!target)
+        if (!req._proxy_target)
             throw "Invalid request";
-        res['_proxy_target'] = target;
+        var target = req._proxy_target;
         res['_proxy_req'] = req;
         console.log('proxying to ' + target);
         proxy.web(req, res, {

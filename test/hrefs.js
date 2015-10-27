@@ -15,8 +15,10 @@ describe('proxy_util.replaceHref()', function(){
   });
   it('should automatically guess the protocol', function(){
     var url = '//google.com',
+        req = nodemock.named('req'),
         res = nodemock.named('res');
-    res._proxy_target='http://lala';
+    req._proxy_target = 'http://lala';
+    res._proxy_req = req
     assert(proxy_util.replaceHref(url, res).endsWith('http'));
     res._proxy_target='https://lala';
     assert(proxy_util.replaceHref(url, res).endsWith('https'));
