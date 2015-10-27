@@ -16,15 +16,16 @@
   "devDependencies": {
     "mocha": "^2.3.3",
     "nock": "^2.15.0",
-    "supertest": "^1.1.0",
-    "nodemock": "^0.3.5"
+    "nodemock": "^0.3.5",
+    "should": "^7.1.1",
+    "supertest": "^1.1.0"
   },
   "scripts": {
     "test": "mocha test"
   },
   "engine": "node 4.1.x",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/kouk/node-injecting-proxy-poc"
+    "type": "git",
+    "url": "https://github.com/kouk/node-injecting-proxy-poc"
   }
 }
