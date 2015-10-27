@@ -3,7 +3,7 @@ var connect = require('connect'),
     through = require('through'),
     url = require('url'),
     _ = require('underscore'),
-    utils = require('./proxy_util'),
+    utils = require('./lib/utils.js'),
     target_base32 = require('./lib/target_base32');
 
 module.exports = exports = function(conf) {

@@ -1,7 +1,6 @@
 var http = require('http'),
     https = require('https'),
     fs = require('fs'),
-    utils = require('./proxy_util'),
     conf = require('./config'),
     proxy = require('./proxy'),
     port = conf.get('port'),
