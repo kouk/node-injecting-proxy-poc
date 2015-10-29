@@ -4,6 +4,7 @@ var connect = require('connect'),
     url = require('url'),
     _ = require('underscore'),
     utils = require('./lib/utils.js'),
+    cookieParser = require('cookie-parser'),
     target_base32 = require('./lib/target_base32');
 
 module.exports = exports = function(conf) {
@@ -111,6 +112,7 @@ module.exports = exports = function(conf) {
         }
     });
 
+    app.use(cookieParser());
     _.uniq(conf.get('targets')).forEach(function(t) {
         app.use(require('./lib/target_' + t)(proxyopts));
     });
