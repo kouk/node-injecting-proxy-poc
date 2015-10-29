@@ -111,7 +111,10 @@ module.exports = exports = function(conf) {
         }
     });
 
-    app.use(target_base32(proxyopts));
+    _.uniq(conf.get('targets')).forEach(function(t) {
+        app.use(require('./lib/target_' + t)(proxyopts));
+    });
+
     app.use(
       function (req, res) {
         if (!req._proxy_target)
