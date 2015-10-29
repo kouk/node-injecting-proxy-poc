@@ -28,6 +28,7 @@ nconf = nconf.defaults({
     'ssl': false,
     'suffix': "livelocal:8000",
     'listen': "127.0.0.1",
+    'cookie_prefix': '',
     'hidden_headers': [],
     'context': {},
     'targets': [ 'cookie', 'base32' ],

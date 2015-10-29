@@ -11,8 +11,14 @@ module.exports = exports = function(conf) {
     var app = connect(),
         proxyopts = {
             suffix: conf.get('suffix'),
-            secure: conf.get('secure')
+            secure: conf.get('secure'),
+            cookie_prefix: conf.get('cookie_prefix'),
         };
+
+    app.use(cookieParser());
+    _.uniq(conf.get('targets')).forEach(function(t) {
+        app.use(require('./lib/target_' + t)(proxyopts));
+    });
 
     selects = []
     conf.get('replace').forEach(function(r){
@@ -31,9 +37,9 @@ module.exports = exports = function(conf) {
         var position = i.position || "end";
         selects.push({
             query: i.select,
-            func: function(node){
-                var ts = node.createStream(),
-                    data = i.payload(conf.get('context'));
+            func: function(node, req){
+                var ts = node.createStream();
+                var data = i.payload(conf.get('context'));
                 if (position != "end")
                     ts.write(data);
                 ts.pipe(through(null, function(){
@@ -110,11 +116,6 @@ module.exports = exports = function(conf) {
             hdrs.location = utils.replaceHref(hdrs.location, res, proxyopts);
             console.log("redirect to: " + hdrs.location);
         }
-    });
-
-    app.use(cookieParser());
-    _.uniq(conf.get('targets')).forEach(function(t) {
-        app.use(require('./lib/target_' + t)(proxyopts));
     });
 
     app.use(
