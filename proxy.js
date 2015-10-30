@@ -48,8 +48,11 @@ module.exports = exports = function(conf) {
         selects.push({
             query: i.select,
             func: function(node, req){
-                var ts = node.createStream();
-                var data = i.payload(req._proxy.context);
+                var ts = node.createStream(),
+                    context = _.extend({}, req._proxy.context) ;
+                if (i.context)
+                    _.extend(context, i.context);
+                var data = i.payload(context);
                 if (position != "end")
                     ts.write(data);
                 ts.pipe(through(null, function(){
