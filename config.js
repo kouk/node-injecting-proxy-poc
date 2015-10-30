@@ -49,6 +49,13 @@ nconf.get('inject').forEach(function(i) {
             console.log(e);
         }
         delete i['file']
+    } else if (i.payload) {
+        try {
+            i['payload'] = _.template(i.payload);
+        } catch (e) {
+            console.log("Error processing: " + i.payload);
+            console.log(e);
+        }
     }
 });
 

@@ -47,9 +47,9 @@ module.exports = exports = function(conf) {
         var position = i.position || "end";
         selects.push({
             query: i.select,
-            func: function(node, req){
+            func: function(node, req, res){
                 var ts = node.createStream(),
-                    context = _.extend({}, req._proxy.context) ;
+                    context = _.extend({}, res._proxy.context) ;
                 if (i.context)
                     _.extend(context, i.context);
                 var data = i.payload(context);
