@@ -13,11 +13,21 @@ module.exports = exports = function(conf) {
             suffix: conf.get('suffix'),
             secure: conf.get('secure'),
             cookie_prefix: conf.get('cookie_prefix'),
+            context: conf.get('context')
         };
+    app.use( function (req, res, next) {
+        res['_proxy'] = new utils.ProxyData(req, res, proxyopts);
+        next();
+    });
 
     app.use(cookieParser());
     _.uniq(conf.get('targets')).forEach(function(t) {
-        app.use(require('./lib/target_' + t)(proxyopts));
+        var middleware = require('./lib/target_' + t).middleware(proxyopts);
+        app.use(function(req, res, next) {
+          if (!res._proxy.target)
+            middleware(res._proxy);
+          next();
+        });
     });
 
     selects = []
@@ -39,7 +49,7 @@ module.exports = exports = function(conf) {
             query: i.select,
             func: function(node, req){
                 var ts = node.createStream();
-                var data = i.payload(conf.get('context'));
+                var data = i.payload(req._proxy.context);
                 if (position != "end")
                     ts.write(data);
                 ts.pipe(through(null, function(){
@@ -61,8 +71,8 @@ module.exports = exports = function(conf) {
                 node.getAttribute('href', function(href) {
                     if (!href)
                         return;
-                    node.setAttribute('href', utils.replaceHref(
-                        href, res, _.extend({}, proxyopts, {deactivate_external: false})));
+                    href = res._proxy.replace_href(href, {deactivate_external: false});
+                    node.setAttribute('href', href);
                 });
             });
         }
@@ -73,8 +83,8 @@ module.exports = exports = function(conf) {
             node.getAttribute('src', function(src) {
                 if (!src)
                     return;
-                node.setAttribute('src', utils.replaceHref(
-                    src, res, _.extend({}, proxyopts, {deactivate_external: false})));
+                src = res._proxy.replace_href(src, {deactivate_external: false});
+                node.setAttribute('src', src);
             });
         }
     });
@@ -84,8 +94,8 @@ module.exports = exports = function(conf) {
             node.getAttribute('href', function(href) {
                 if (!href)
                     return;
-                node.setAttribute('href', utils.replaceHref(
-                    href, res, _.extend({}, proxyopts, {deactivate_external: false})));
+                href = res._proxy.replace_href(href, {deactivate_external: false});
+                node.setAttribute('href', href);
             });
         }
     });
@@ -95,9 +105,9 @@ module.exports = exports = function(conf) {
             node.getAttribute('href', function(href) {
                 if (!href)
                     throw "href empty"
-                var opts = _.extend({}, proxyopts, {
-                    deactivate_external: conf.get('deactivateExternal')});
-                node.setAttribute('href', utils.replaceHref(href, res, opts));
+                href = res._proxy.replace_href(
+                    href, {deactivate_external: conf.get('deactivateExternal')});
+                node.setAttribute('href', href);
             });
         }
       });
@@ -113,23 +123,21 @@ module.exports = exports = function(conf) {
             delete hdrs[h];
         });
         if (hdrs.location != undefined) {
-            hdrs.location = utils.replaceHref(hdrs.location, res, proxyopts);
+            hdrs.location = res._proxy.replace_href(hdrs.location);
             console.log("redirect to: " + hdrs.location);
         }
     });
 
     app.use(
       function (req, res) {
-        if (!req._proxy_target)
+        if (!res._proxy.target)
             throw "Invalid request";
-        var target = req._proxy_target;
-        res['_proxy_req'] = req;
-        console.log('proxying to ' + target);
+        console.log('proxying to ' + res._proxy.target);
         proxy.web(req, res, {
-            target: target,
+            target: res._proxy.target,
             secure: false,
             headers: {
-               host: url.parse(target).host
+               host: url.parse(res._proxy.target).host
             }
         });
       }
