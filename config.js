@@ -30,6 +30,7 @@ nconf = nconf.defaults({
     'listen': "127.0.0.1",
     'cookie_prefix': '',
     'hidden_headers': [],
+    'proto_separator': '-',
     'context': {},
     'targets': [ 'cookie', 'base32' ],
     'deactivateExternal': false

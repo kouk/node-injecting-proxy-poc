@@ -14,7 +14,7 @@ describe('app.listen()', function(){
     server.listen(0, function(){
       request(server)
       .get('/')
-      .set('Host', base32.encode(target) + '.http' + conf.get('suffix'))
+      .set('Host', base32.encode(target) + '-http' + conf.get('suffix'))
       .expect(200, done);
     });
   });
@@ -27,7 +27,7 @@ describe('app.listen()', function(){
     server.listen(0, function(){
       request(server)
       .get('/')
-      .set('Host', base32.encode(target) + '.http' + conf.get('suffix'))
+      .set('Host', base32.encode(target) + '-http' + conf.get('suffix'))
       .expect(200, done);
     });
   });

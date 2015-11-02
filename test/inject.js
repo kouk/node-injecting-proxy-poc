@@ -25,7 +25,7 @@ describe('app-inject', function(){
     server.listen(0, function(){
       request(server)
       .get('/')
-      .set('Host', base32.encode(target) + '.http' + conf.get('suffix'))
+      .set('Host', base32.encode(target) + '-http' + conf.get('suffix'))
       .expect(200, function(req, res) {
           res.text.should.equal('<html><head><title>yo</title><div>FOOBAR</div></head><body>man</body></html>');
           done();

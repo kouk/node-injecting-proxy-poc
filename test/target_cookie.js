@@ -27,7 +27,7 @@ describe('target_cookie', function(){
     it('should do nothing if host doesn\'t match a cookie', function(){
         var proxy = nodemock.mock('on').fail();
         proxy.req = req;
-        proxy.req.headers.host = 'XYZ';
+        proxy.req.headers.host = 'XYZ-http';
         proxy.req.cookies.lalacookieWAT = 'value';
         targetf(proxy);
         should.not.exist(proxy.target);
@@ -40,11 +40,30 @@ describe('target_cookie', function(){
         }));
         var proxy = nodemock.mock('on').takes('href', function() {});
         proxy.req = req;
-        proxy.req.headers.host = 'XYZ';
         proxy.req.cookies.lalacookieXYZ = urlsafe_base64.encode(cookie);
+        proxy.request_id = 'XYZ';
+        proxy.request_proto = 'http';
         targetf(proxy);
         should.exist(proxy.target);
+        proxy.request_proto.should.equal('http');
         proxy.target.should.equal('http://host');
+        proxy.assertThrows();
+    });
+    it('should add the target if a cookie matches the host (https)', function(){
+        var cookie = Buffer(JSON.stringify({
+            proxy_target: {
+                domain: 'host'
+            }
+        }));
+        var proxy = nodemock.mock('on').takes('href', function() {});
+        proxy.req = req;
+        proxy.req.cookies.lalacookieXYZ = urlsafe_base64.encode(cookie);
+        proxy.request_id = 'XYZ';
+        proxy.request_proto = 'https';
+        targetf(proxy);
+        should.exist(proxy.target);
+        proxy.request_proto.should.equal('https');
+        proxy.target.should.equal('https://host');
         proxy.assertThrows();
     });
   });

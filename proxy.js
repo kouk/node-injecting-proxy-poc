@@ -13,6 +13,7 @@ module.exports = exports = function(conf) {
             suffix: conf.get('suffix'),
             secure: conf.get('secure'),
             cookie_prefix: conf.get('cookie_prefix'),
+            proto_separator: conf.get('proto_separator'),
             context: conf.get('context')
         };
     app.use( function (req, res, next) {

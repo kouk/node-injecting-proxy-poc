@@ -28,7 +28,8 @@ describe('target_base32', function(){
     it('should decode a properly formatted host header', function(){
         var proxy = nodemock.mock('on').takes('href', function() {});
         proxy.req = req;
-        proxy.req.headers.host = base32.encode('foo') + '.http.bar';
+        proxy.request_id = base32.encode('foo');
+        proxy.request_proto = 'http';
         targetf(proxy);
         should.exist(proxy.target);
         proxy.target.should.equal('http://foo');

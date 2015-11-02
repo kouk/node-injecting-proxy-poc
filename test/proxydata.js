@@ -11,7 +11,7 @@ describe('util.ProxyData', function(){
       var url = 'http://google.com',
           req = nodemock.named('req'),
           res = nodemock.named('res');
-      var pdata = new utils.ProxyData(req, res);
+      var pdata = new utils.ProxyData(req, res, {});
       req.headers = {host: 'foobar'}
       pdata.replace_href(url, {deactivate_external: true}).should.equal("javascript:void;");
     });
