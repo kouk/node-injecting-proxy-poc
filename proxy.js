@@ -17,7 +17,7 @@ module.exports = exports = function(conf) {
             context: conf.get('context')
         };
     app.use( function (req, res, next) {
-        res['_proxy'] = new utils.ProxyData(req, res, proxyopts);
+        res._proxy = new utils.ProxyData(req, res, proxyopts);
         next();
     });
 
@@ -31,7 +31,7 @@ module.exports = exports = function(conf) {
         });
     });
 
-    selects = []
+    selects = [];
     conf.get('replace').forEach(function(r){
         selects.push({
             query: r.select,
@@ -108,7 +108,7 @@ module.exports = exports = function(conf) {
         func: function(node, req, res) {
             node.getAttribute('href', function(href) {
                 if (!href)
-                    throw "href empty"
+                    throw "href empty";
                 href = res._proxy.replace_href(
                     href, {deactivate_external: conf.get('deactivateExternal')});
                 node.setAttribute('href', href);
@@ -123,10 +123,9 @@ module.exports = exports = function(conf) {
     proxy.on('proxyRes', function(proxyRes, req, res) {
         var hdrs = proxyRes.headers;
         conf.get('hidden_headers').forEach(function(h) {
-            var h = h.toLowerCase();
-            delete hdrs[h];
+            delete hdrs[h.toLowerCase()];
         });
-        if (hdrs.location != undefined) {
+        if (hdrs.location !== undefined) {
             hdrs.location = res._proxy.replace_href(hdrs.location);
             console.log("redirect to: " + hdrs.location);
         }

@@ -39,7 +39,7 @@ describe('target_base32', function(){
   describe('replaceHref', function(){
     it('should do nothing without a host', function(){
       var url = {};
-      target_base32.handle_href(url)
+      target_base32.handle_href(url);
       should.not.exist(url.host);
     });
     it('should replace the href', function(){

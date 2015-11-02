@@ -18,7 +18,7 @@ if (fs.existsSync(localConfigFile)) {
 
 if (fs.existsSync(defaultConfigFile)) {
     console.log("Reading config from: " + defaultConfigFile);
-    nconf = nconf.file('default', {file: defaultConfigFile})
+    nconf = nconf.file('default', {file: defaultConfigFile});
 }
 nconf = nconf.defaults({
     'inject': [],
@@ -44,15 +44,15 @@ nconf.get('inject').forEach(function(i) {
         console.log("reading payload file "+ p);
         try {
             var data = fs.readFileSync(p, 'utf8');
-            i['payload'] = _.template(data);
+            i.payload = _.template(data);
         } catch (e) {
             console.log("Error processing " + p);
             console.log(e);
         }
-        delete i['file']
+        delete i.file;
     } else if (i.payload) {
         try {
-            i['payload'] = _.template(i.payload);
+            i.payload = _.template(i.payload);
         } catch (e) {
             console.log("Error processing: " + i.payload);
             console.log(e);
@@ -60,4 +60,4 @@ nconf.get('inject').forEach(function(i) {
     }
 });
 
-module.exports = exports = nconf
+module.exports = exports = nconf;
