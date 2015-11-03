@@ -17,7 +17,16 @@ module.exports = exports = function(conf) {
             cookie_prefix: conf.get('cookie_prefix'),
             proto_separator: conf.get('proto_separator'),
             context: conf.get('context')
+        },
+        timeout = conf.get('timeout'),
+        proxyserveropts = {
+            secure: false,
         };
+
+    if (timeout && timeout > 0) {
+        proxyserveropts.proxyTimeout = timeout;
+    }
+
     app.use( function (req, res, next) {
         res._proxy = new utils.ProxyData(req, res, proxyopts);
         next();
@@ -153,13 +162,12 @@ module.exports = exports = function(conf) {
         if (!res._proxy.target)
             throw "Invalid request";
         console.log('proxying to ' + res._proxy.target);
-        proxy.web(req, res, {
+        proxy.web(req, res, _.extend({}, proxyserveropts, {
             target: res._proxy.target,
-            secure: false,
             headers: {
                host: url.parse(res._proxy.target).host
             }
-        });
+        }));
       }
     );
     return app;
