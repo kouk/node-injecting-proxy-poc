@@ -1,4 +1,6 @@
-var connect = require('connect'),
+var fs = require('fs'),
+    path = require('path'),
+    connect = require('connect'),
     httpProxy = require('http-proxy'),
     through = require('through'),
     url = require('url'),
@@ -117,6 +119,24 @@ module.exports = exports = function(conf) {
 
     var proxy = httpProxy.createServer();
 
+    // Listen for the `error` event on `proxy`.
+    proxy.on('error', function (err, req, res) {
+      var template, data, context = {};
+      if (res._proxy && res._proxy.context)
+          context = res._proxy.context;
+      template = conf.get('templates').error_page;
+      if (template)
+          data = template(context);
+      else
+          data = '<html><head/><body><h1>502 Bad Gateway</h1></body></html>';
+      res.writeHead(502, {
+        'Content-Type': 'text/html',
+        'Content-Length': data.length
+      });
+      console.log(err);
+      res.end(data);
+    });
+
     proxy.on('proxyRes', function(proxyRes, req, res) {
         var hdrs = proxyRes.headers;
         conf.get('hidden_headers').forEach(function(h) {
@@ -129,7 +149,7 @@ module.exports = exports = function(conf) {
     });
 
     app.use(
-      function (req, res) {
+      function (req, res, next) {
         if (!res._proxy.target)
             throw "Invalid request";
         console.log('proxying to ' + res._proxy.target);
