@@ -7,22 +7,22 @@ var target_base32 = require('../lib/target_base32'),
     request = require('supertest');
 describe('target_base32', function(){
   describe('middleware', function(){
-    var targetf, req;
+    var target, req;
     beforeEach(function() {
         req = {headers: {}};
-        targetf = target_base32.middleware({suffix: '.bar'});
+        target = new target_base32({suffix: '.bar'});
     });
     it('should do nothing without a host', function(){
         var proxy = nodemock.mock('on').fail();
         proxy.req = req;
-        targetf(proxy);
+        target.make_target(proxy);
         should.not.exist(proxy.target);
     });
     it('should do nothing if host header is not in the expected format', function(){
         var proxy = nodemock.mock('on').fail();
         proxy.req = req;
         proxy.req.headers.host = 'lala';
-        targetf(proxy);
+        target.make_target(proxy);
         should.not.exist(proxy.target);
     });
     it('should decode a properly formatted host header', function(){
@@ -30,30 +30,29 @@ describe('target_base32', function(){
         proxy.req = req;
         proxy.request_id = base32.encode('foo');
         proxy.request_proto = 'http';
-        targetf(proxy);
+        target.make_target(proxy);
         should.exist(proxy.target);
         proxy.target.should.equal('http://foo');
-        proxy.assertThrows();
+        //proxy.assertThrows();
     });
   });
   describe('replaceHref', function(){
+    var target;
+    beforeEach(function() {
+        target = new target_base32({proto_separator: '_', suffix: '.bar'});
+    });
     it('should do nothing without a host', function(){
       var url = {};
-      target_base32.handle_href(url);
+      target.handle_href(url);
       should.not.exist(url.host);
     });
     it('should replace the href', function(){
       var url = {protocol: 'http', host: 'google.com'};
-      target_base32.handle_href(url);
-      url.host.should.equal('cxqpytvccmq66vvd.http');
-    });
-    it('should automatically guess the protocol', function(){
-      var url = {host: 'google.com'};
-      target_base32.handle_href.call({target: 'http://lala'}, url);
-      url.host.should.endWith('http');
-      url.host = 'google.com';
-      target_base32.handle_href.call({target: 'https://lala'}, url);
-      url.host.should.endWith('https');
+      target.handle_href(url);
+      url.host.should.equal('cxqpytvccmq66vvd_http.bar');
+      url = {protocol: 'https', host: 'google.com'};
+      target.handle_href(url);
+      url.host.should.equal('cxqpytvccmq66vvd_https.bar');
     });
   });
 });

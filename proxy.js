@@ -23,12 +23,9 @@ module.exports = exports = function(conf) {
 
     app.use(cookieParser());
     _.uniq(conf.get('targets')).forEach(function(t) {
-        var middleware = require('./lib/target_' + t).middleware(proxyopts);
-        app.use(function(req, res, next) {
-          if (!res._proxy.target)
-            middleware(res._proxy);
-          next();
-        });
+        var constructor = require('./lib/target_' + t);
+        target = new constructor(proxyopts);
+        app.use(target.middleware.bind(target));
     });
 
     selects = [];
