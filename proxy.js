@@ -146,6 +146,15 @@ module.exports = exports = function(conf) {
       res.end(data);
     });
 
+    proxy.on('proxyReq', function(proxyReq, req, res) {
+      if (proxyReq._headers.referer) {
+        proxyReq._headers.referer = res._proxy.target + req.url;
+      }
+      if (proxyReq._headers.origin) {
+        proxyReq._headers.origin = res._proxy.target;
+      }
+    });
+
     proxy.on('proxyRes', function(proxyRes, req, res) {
         var hdrs = proxyRes.headers;
         conf.get('hidden_headers').forEach(function(h) {
@@ -154,6 +163,17 @@ module.exports = exports = function(conf) {
         if (hdrs.location !== undefined) {
             hdrs.location = res._proxy.replace_href(hdrs.location);
             console.log("redirect to: " + hdrs.location);
+        }
+        if (hdrs['set-cookie'] !== undefined) {
+          new_cookies = [];
+          hdrs['set-cookie'].forEach(function(c){
+            if (!proxyopts.secure){
+              c = c.replace('; Secure', '');
+            }
+            c = c.replace(/(Domain=)(.*)(;)/i, '$1.live.livelocal$3');
+            new_cookies.push(c);
+          });
+          hdrs['set-cookie'] = new_cookies;
         }
     });
 
