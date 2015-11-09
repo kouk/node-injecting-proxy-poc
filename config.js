@@ -34,6 +34,10 @@ nconf = nconf.defaults({
     'context': {},
     'pages': {},
     'targets': [ 'cookie', 'base32' ],
+    'redirects': {},
+    "error_handlers": [
+      'redirect'
+    ],
     'deactivateExternal': false
 });
 
@@ -60,21 +64,5 @@ nconf.get('inject').forEach(function(i) {
         }
     }
 });
-
-templates = {};
-_.each(nconf.get('pages'), function(file, k) {
-    var data, p = path.resolve();
-    if (!fs.existsSync(p))
-        throw "Can't find file: " + file;
-    try {
-        data = fs.readFileSync(p, 'utf8');
-        templates[k] = _.template(data);
-    } catch (e) {
-        console.log("Error processing " + p);
-        console.log(e);
-    }
-});
-
-nconf.set('templates', templates);
 
 module.exports = exports = nconf;

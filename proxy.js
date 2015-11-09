@@ -131,20 +131,10 @@ module.exports = exports = function(conf) {
 
     // Listen for the `error` event on `proxy`.
     proxy.on('error', function (err, req, res) {
-      var template, data, context = {};
-      if (res._proxy && res._proxy.context)
-          context = res._proxy.context;
-      template = conf.get('templates').error_page;
-      if (template)
-          data = template(context);
-      else
-          data = '<html><head/><body><h1>502 Bad Gateway</h1></body></html>';
-      res.writeHead(502, {
-        'Content-Type': 'text/html',
-        'Content-Length': data.length
+      _.find(conf.get('error_handlers'), function(t) {
+        return require('./lib/error_' + t)(err, req, res, conf);
       });
-      console.log(err);
-      res.end(data);
+      res.end();
     });
 
     proxy.on('proxyReq', function(proxyReq, req, res) {

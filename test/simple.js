@@ -48,7 +48,7 @@ describe('app.listen()', function(){
       request(server)
       .get('/')
       .set('Host', base32.encode(target) + '-http' + conf.get('suffix'))
-      .expect(502, 'foo', done);
+      .expect(301, '', done);
     });
   });
 });
