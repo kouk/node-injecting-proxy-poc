@@ -7,6 +7,7 @@ var fs = require('fs'),
     _ = require('underscore'),
     utils = require('./lib/utils.js'),
     cookieParser = require('cookie-parser'),
+    urlsafe_base64 = require('urlsafe-base64'),
     target_base32 = require('./lib/target_base32');
 
 module.exports = exports = function(conf) {
@@ -156,25 +157,15 @@ module.exports = exports = function(conf) {
     });
 
     proxy.on('proxyRes', function(proxyRes, req, res) {
-        var hdrs = proxyRes.headers;
+        var hdrs = proxyRes.headers,
+            proxydata = res._proxy;
+            new_cookies = [];
         conf.get('hidden_headers').forEach(function(h) {
             delete hdrs[h.toLowerCase()];
         });
-        if (hdrs.location !== undefined) {
-            hdrs.location = res._proxy.replace_href(hdrs.location);
-            console.log("redirect to: " + hdrs.location);
-        }
-        if (hdrs['set-cookie'] !== undefined) {
-          new_cookies = [];
-          hdrs['set-cookie'].forEach(function(c){
-            if (!proxyopts.secure){
-              c = c.replace('; Secure', '');
-            }
-            c = c.replace(/(Domain=)(.*)(;)/i, '$1.live.livelocal$3');
-            new_cookies.push(c);
-          });
-          hdrs['set-cookie'] = new_cookies;
-        }
+        res._proxy.handle_redirect(proxyRes);
+        if (hdrs['set-cookie'] !== undefined)
+          hdrs['set-cookie'] = _.map(hdrs['set-cookie'], proxydata.mangle_outgoing_cookie, proxydata);
     });
 
     app.use(

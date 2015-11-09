@@ -38,7 +38,7 @@ describe('target_cookie', function(){
                 domain: 'host'
             }
         }));
-        var proxy = nodemock.mock('on').takes('replace_href', function() {});
+        var proxy = nodemock.mock('on').takesAll().times(2); // .takes('replace_href', function() {});
         proxy.req = req;
         proxy.req.cookies.lalacookieXYZ = urlsafe_base64.encode(cookie);
         proxy.request_id = 'XYZ';
@@ -55,7 +55,7 @@ describe('target_cookie', function(){
                 domain: 'host'
             }
         }));
-        var proxy = nodemock.mock('on').takes('replace_href', function() {});
+        var proxy = nodemock.mock('on').takesAll().times(2); //.takes('replace_href', function() {});
         proxy.req = req;
         proxy.req.cookies.lalacookieXYZ = urlsafe_base64.encode(cookie);
         proxy.request_id = 'XYZ';
