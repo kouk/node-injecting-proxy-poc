@@ -21,14 +21,19 @@
     "nock": "^2.15.0",
     "nodemock": "^0.3.5",
     "pre-commit": "^1.1.2",
+    "sandboxed-module": "^2.0.3",
     "should": "^7.1.1",
+    "sinon": "^1.17.2",
     "supertest": "^1.1.0"
   },
   "scripts": {
     "test": "mocha test",
     "jshint": "jshint -c .jshintrc --exclude-path .gitignore ."
   },
-  "pre-commit": [ "jshint", "test" ],
+  "pre-commit": [
+    "jshint",
+    "test"
+  ],
   "engine": "node 4.1.x",
   "repository": {
     "type": "git",
