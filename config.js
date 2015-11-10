@@ -1,8 +1,7 @@
 var fs = require('fs'),
     path = require('path'),
     nconf = require('nconf'),
-    _ = require('underscore'),
-    defaultConfigFile = __dirname + '/config.json';
+    _ = require('underscore');
 
 nconf.argv()
      .env({
@@ -16,6 +15,7 @@ if (fs.existsSync(localConfigFile)) {
     nconf = nconf.file('local', {file: localConfigFile});
 }
 
+var defaultConfigFile = path.resolve( 'config.json' );
 if (fs.existsSync(defaultConfigFile)) {
     console.log("Reading config from: " + defaultConfigFile);
     nconf = nconf.file('default', {file: defaultConfigFile});
