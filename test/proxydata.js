@@ -61,7 +61,7 @@ describe('util.ProxyData', function(){
       newurl.should.equal(returl);
       emitspy.called.should.be.true();
       rstub.calledOnce.should.be.true();
-      proxyres.headers.location.should.equal('foo');
+      should.not.exist(proxyres.headers.location);
       should.exist(proxyres.statusCode);
       proxyres.statusCode.should.equal(200);
     });
