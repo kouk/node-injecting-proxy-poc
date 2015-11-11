@@ -1,53 +1,75 @@
 var fs = require('fs'),
     path = require('path'),
-    nconf = require('nconf'),
-    _ = require('underscore'),
-    defaultConfigFile = __dirname + '/config.json';
+    nconfmod = require('nconf'),
+    _ = require('underscore');
 
-nconf.argv()
-     .env({
-         separator: '__',
-         match: /^LIVEPROXY/
-     });
+module.exports = exports = function(overrides) {
+    var nconf = new nconfmod.Provider();
+    if (overrides)
+        nconf.overrides(overrides);
 
-var localConfigFile = path.resolve( nconf.get( 'localconf' ) || 'config-local.json' );
-if (fs.existsSync(localConfigFile)) {
-    console.log("Reading local config from: " + localConfigFile);
-    nconf = nconf.file('local', {file: localConfigFile});
-}
+    nconf.argv()
+         .env({
+             separator: '__',
+             match: /^LIVEPROXY/
+         });
 
-if (fs.existsSync(defaultConfigFile)) {
-    console.log("Reading config from: " + defaultConfigFile);
-    nconf = nconf.file('default', {file: defaultConfigFile})
-}
-nconf = nconf.defaults({
-    'inject': [],
-    'replace': [],
-    'port': 80,
-    'secure':false,
-    'ssl': false,
-    'suffix': "livelocal:8000",
-    'listen': "127.0.0.1",
-    'hidden_headers': [],
-    'context': {},
-    'deactivateExternal': false
-});
-
-nconf.get('inject').forEach(function(i) {
-    if (i.file) {
-        var p = path.resolve(i.file);
-        if (!fs.existsSync(p))
-            throw "Can't find file: " + i.file;
-        console.log("reading payload file "+ p);
-        try {
-            var data = fs.readFileSync(p, 'utf8');
-            i['payload'] = _.template(data);
-        } catch (e) {
-            console.log("Error processing " + p);
-            console.log(e);
-        }
-        delete i['file']
+    var localConfigFile = path.resolve( nconf.get( 'localconf' ) || 'config-local.json' );
+    if (fs.existsSync(localConfigFile)) {
+        console.log("Reading local config from: " + localConfigFile);
+        nconf = nconf.file('local', {file: localConfigFile});
     }
-});
 
-module.exports = exports = nconf
+    var defaultConfigFile = path.resolve( 'config.json' );
+    if (fs.existsSync(defaultConfigFile)) {
+        console.log("Reading config from: " + defaultConfigFile);
+        nconf = nconf.file('default', {file: defaultConfigFile});
+    }
+    nconf = nconf.defaults({
+        'inject': [],
+        'replace': [],
+        'port': 80,
+        'secure':false,
+        'ssl': false,
+        'suffix': "livelocal:8000",
+        'listen': "127.0.0.1",
+        'cookie_prefix': '',
+        'hidden_headers': [],
+        'proto_separator': '-',
+        'mask_redirect': false,
+        'context': {},
+        'pages': {},
+        'targets': [ 'cookie', 'base32' ],
+        'redirects': {},
+        "error_handlers": [
+          'redirect'
+        ],
+        'deactivateExternal': false
+    });
+
+    nconf.get('inject').forEach(function(i) {
+        if (i.file) {
+            var p = path.resolve(i.file);
+            if (!fs.existsSync(p))
+                throw "Can't find file: " + i.file;
+            console.log("reading payload file "+ p);
+            try {
+                var data = fs.readFileSync(p, 'utf8');
+                i.payload = _.template(data);
+            } catch (e) {
+                console.log("Error processing " + p);
+                console.log(e);
+            }
+            delete i.file;
+        } else if (i.payload) {
+            try {
+                i.payload = _.template(i.payload);
+            } catch (e) {
+                console.log("Error processing: " + i.payload);
+                console.log(e);
+            }
+        }
+    });
+
+    return nconf;
+};

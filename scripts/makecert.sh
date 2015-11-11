@@ -37,8 +37,8 @@ if ! [ -f certificate.pem ] ; then
         echo "Creating a new CA certificate.."
         openssl req -subj "/CN=$REQUESTED_CA_CN" -x509 -new -newkey rsa:2048 -out demoCA/cacert.pem -keyout demoCA/private/cakey.pem -nodes -batch -config openssl.cnf
     fi
-    openssl req -new -newkey rsa:2048 -out req.pem -keyout key.pem -nodes -reqexts v3_req_proxy -config openssl.cnf -nodes -batch
-    openssl ca -in req.pem -config openssl.cnf -extensions v3_req_proxy -policy policy_anything -batch
+    openssl req -new -newkey rsa:2048 -out req.pem -keyout key.pem -nodes -config openssl.cnf -nodes -batch
+    openssl ca -noemailDN -in req.pem -config openssl.cnf -extensions v3_req -policy policy_anything -batch
     cp demoCA/newcerts/${SERIAL}.pem certificate.pem
 fi
 
