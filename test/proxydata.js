@@ -34,7 +34,7 @@ describe('util.ProxyData', function(){
       var url = 'http://google.com', returl = 'bar',
           req = nodemock.named('req'),
           res = nodemock.named('res');
-      var pdata = new utils.ProxyData(req, res, {mask_redirect: true}),
+      var pdata = new utils.ProxyData(req, res, {}),
           headers = {location: 'foo'},
           emitspy = sinon.spy(pdata, 'emit'),
           rstub = sinon.stub(pdata, 'replace_href').returns(returl);
@@ -52,7 +52,7 @@ describe('util.ProxyData', function(){
       var url = 'http://google.com', returl='bar',
           req = nodemock.named('req'),
           res = nodemock.named('res');
-      var pdata = new utils.ProxyData(req, res, {mask_redirect: false}),
+      var pdata = new utils.ProxyData(req, res, {mask_redirect: true}),
           headers = {location: 'foo'},
           proxyres = {headers: headers},
           emitspy = sinon.spy(pdata, 'emit'),
