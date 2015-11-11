@@ -1,6 +1,8 @@
+var mkconf = require('./config'),
+    proxy = require('./proxy');
 module.exports = exports = {
     get conf() {
-        return require('./config.js');
+        return mkconf();
     },
     proxy: require('./proxy')
 };

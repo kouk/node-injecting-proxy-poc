@@ -1,17 +1,14 @@
 var proxy = require('../proxy'),
     base32 = require('base32'),
-    conf = require('../config'),
+    mkconf = require('../config'),
     nock = require('nock'),
     _ = require('underscore'),
     request = require('supertest');
 
 describe('app.listen()', function(){
-  beforeEach(function() {
-      conf.set('timeout', 0);
-  });
   it('should respond to a simple request on a hostname', function(done){
     var target = 'target.doesn.t.exist.com',
-        server = proxy(conf),
+        conf = mkconf(), server = proxy(conf),
         couchdb = nock('http://' + target)
            .get('/')
            .reply(200, "");
@@ -24,7 +21,7 @@ describe('app.listen()', function(){
   });
   it('should respond to a simple request on a hostname with a port', function(done){
     var target = 'target.doesn.t.exist.com:1234',
-        server = proxy(conf),
+        conf = mkconf(), server = proxy(conf),
         couchdb = nock('http://' + target)
            .get('/')
            .reply(200, "");
@@ -36,9 +33,12 @@ describe('app.listen()', function(){
     });
   });
   it('should timeout a slow response', function(done){
-    conf.set('timeout', 100);
-    conf.set('templates', {error_page: _.template('foo')});
     var target = 'target.doesn.t.exist.com:1234',
+        conf = mkconf({
+            timeout: 100,
+            mask_redirect: false,
+            templates: {error_page: _.template('foo')}
+        }),
         server = proxy(conf),
         couchdb = nock('http://' + target)
            .get('/')
