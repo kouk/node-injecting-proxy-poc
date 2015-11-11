@@ -54,5 +54,11 @@ describe('target_base32', function(){
       target.handle_href(url);
       url.host.should.equal('cxqpytvccmq66vvd_https.bar');
     });
+    it('should not replace the href if too long', function(){
+      var host = '11340-presscdn-0-15-pagely.netdna-ssl.com',
+          url = {protocol: 'http', host: host};
+      target.handle_href(url);
+      url.host.should.equal(host);
+    });
   });
 });
