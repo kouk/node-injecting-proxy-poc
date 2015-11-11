@@ -16,6 +16,7 @@ module.exports = exports = function(conf) {
             suffix: conf.get('suffix'),
             secure: conf.get('secure'),
             cookie_prefix: conf.get('cookie_prefix'),
+            mask_redirect: conf.get('mask_redirect'),
             proto_separator: conf.get('proto_separator'),
             context: conf.get('context')
         },
@@ -153,7 +154,11 @@ module.exports = exports = function(conf) {
         conf.get('hidden_headers').forEach(function(h) {
             delete hdrs[h.toLowerCase()];
         });
-        res._proxy.handle_redirect(proxyRes);
+        var newurl = res._proxy.handle_redirect(proxyRes);
+        if (newurl && proxyopts.mask_redirect)
+          proxyRes.on('end', function () {
+              res.write('<script type="text/javascript">window.location="' + newurl + '";</script>');
+          });
         if (hdrs['set-cookie'] !== undefined)
           hdrs['set-cookie'] = _.map(hdrs['set-cookie'], proxydata.mangle_outgoing_cookie, proxydata);
     });
