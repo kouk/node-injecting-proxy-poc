@@ -25,42 +25,41 @@ describe('util.ProxyData', function(){
           req = nodemock.named('req'),
           res = nodemock.named('res');
       var pdata = new utils.ProxyData(req, res, {}),
-          emitspy = sinon.spy(pdata, 'emit');
+          emitspy = sinon.stub(pdata, 'emit');
       var newurl = pdata.handle_redirect({headers: {}});
       should.not.exist(newurl);
       emitspy.called.should.be.false();
     });
     it('should emit the redirect event', function(){
-      var url = 'http://google.com', returl = 'bar',
+      var url = 'http://google.com', returl='http//foo/bar',
           req = nodemock.named('req'),
           res = nodemock.named('res');
       var pdata = new utils.ProxyData(req, res, {}),
-          headers = {location: 'foo'},
-          emitspy = sinon.spy(pdata, 'emit'),
-          rstub = sinon.stub(pdata, 'replace_href').returns(returl);
+          headers = {location: url},
+          emitspy = sinon.stub(pdata, 'emit', function(e, r, proxyres) {
+              e.should.equal('redirect');
+              proxyres.headers.location = returl;
+          });
       var newurl = pdata.handle_redirect({headers: headers});
       newurl.should.equal(returl);
       headers.location.should.equal(returl);
       emitspy.called.should.be.true();
-      rstub.calledOnce.should.be.true();
-      rstub.lastCall.args[0].should.equal('foo');
-      should.exist(rstub.lastCall.args[1].deactivate_external);
-      rstub.lastCall.args[1].deactivate_external.should.be.false();
       should.exist(headers.location);
     });
     it('should reset the status code if configured', function(){
-      var url = 'http://google.com', returl='bar',
+      var url = 'http://google.com', returl='http://foo/bar',
           req = nodemock.named('req'),
           res = nodemock.named('res');
       var pdata = new utils.ProxyData(req, res, {mask_redirect: true}),
-          headers = {location: 'foo'},
+          headers = {location: url},
           proxyres = {headers: headers},
-          emitspy = sinon.spy(pdata, 'emit'),
-          rstub = sinon.stub(pdata, 'replace_href').returns(returl);
+          emitspy = sinon.stub(pdata, 'emit', function(e, r, proxyres) {
+              e.should.equal('redirect');
+              proxyres.headers.location = returl;
+          });
       var newurl = pdata.handle_redirect(proxyres);
       newurl.should.equal(returl);
       emitspy.called.should.be.true();
-      rstub.calledOnce.should.be.true();
       should.not.exist(proxyres.headers.location);
       should.exist(proxyres.statusCode);
       proxyres.statusCode.should.equal(200);
