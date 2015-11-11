@@ -6,6 +6,13 @@ var proxy = require('../proxy'),
     request = require('supertest');
 
 describe('app-inject', function(){
+  var default_target = 'target.doesn.t.exist.com:1234',
+      mkbackend = function(statusCode, body, headers, path, target){
+          t = 'http://' + (target || default_target);
+          h = _.extend({'Content-Type': 'text/html'}, headers || {});
+          return nock(t).defaultReplyHeaders(h).get(path || "/")
+              .reply(statusCode || 200, body || "");
+      };
   afterEach(function() {
       conf.set('inject', []);
   });
@@ -14,20 +21,15 @@ describe('app-inject', function(){
         'select': 'head',
         'payload': _.template('<div>FOOBAR</div>')
     }]);
-    var target = 'target.doesn.t.exist.com:1234',
-        server = proxy(conf),
-        couchdb = nock('http://' + target)
-           .defaultReplyHeaders({
-              'Content-Type': 'text/html'
-           })
-           .get('/')
-           .reply(200, "<html><head><title>yo</title></head><body>man</body></html>");
+    var server = proxy(conf),
+        body = "<html><head><title>yo</title></head><body>man</body></html>",
+        backend = mkbackend(200, body);
     server.listen(0, function(){
       request(server)
       .get('/')
-      .set('Host', base32.encode(target) + '-http' + conf.get('suffix'))
+      .set('Host', base32.encode(default_target) + '-http' + conf.get('suffix'))
       .expect(200, function(req, res) {
-          res.text.should.equal('<html><head><title>yo</title><div>FOOBAR</div></head><body>man</body></html>');
+          res.text.should.equal(body.replace('</head>', '<div>FOOBAR</div></head>'));
           done();
       });
     });
@@ -38,21 +40,15 @@ describe('app-inject', function(){
         'handle_redirect': true,
         'payload': _.template('<div>FOOBAR</div>')
     }]);
-    var target = 'target.doesn.t.exist.com:1234',
-        server = proxy(conf),
-        couchdb = nock('http://' + target)
-           .defaultReplyHeaders({
-              'Content-Type': 'text/html',
-              'Location': '/foobar'
-           })
-           .get('/')
-           .reply(301, "<html><head><title>yo</title></head><body>man</body></html>");
+    var server = proxy(conf),
+        body = "<html><head><title>yo</title></head><body>man</body></html>",
+        backend = mkbackend(301, body, {Location: '/foobar'});
     server.listen(0, function(){
       request(server)
       .get('/')
-      .set('Host', base32.encode(target) + '-http' + conf.get('suffix'))
+      .set('Host', base32.encode(default_target) + '-http' + conf.get('suffix'))
       .expect(200, function(req, res) {
-          res.text.should.equal('<html><head><title>yo</title><div>FOOBAR</div></head><body>man</body></html>');
+          res.text.should.equal(body.replace('</head>', '<div>FOOBAR</div></head>'));
           done();
       });
     });
