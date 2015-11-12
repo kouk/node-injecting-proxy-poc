@@ -155,10 +155,15 @@ module.exports = exports = function(conf) {
             delete hdrs[h.toLowerCase()];
         });
         var newurl = res._proxy.handle_redirect(proxyRes);
-        if (newurl && proxyopts.mask_redirect)
+        if (newurl && proxyopts.mask_redirect) {
+          var payload = '<script type="text/javascript">window.location="' + newurl + '";</script>',
+              contentlen = proxyRes.headers['content-length'];
+          if (!contentlen) contentlen = '0';
+          proxyRes.headers['content-length'] = parseInt(contentlen) + payload.length;
           proxyRes.on('end', function () {
-              res.write('<script type="text/javascript">window.location="' + newurl + '";</script>');
+              res.write(payload);
           });
+        }
         if (hdrs['set-cookie'] !== undefined)
           hdrs['set-cookie'] = _.map(hdrs['set-cookie'], proxydata.mangle_outgoing_cookie, proxydata);
     });
