@@ -59,6 +59,8 @@ module.exports = exports = function(conf) {
         selects.push({
             query: i.select,
             func: function(node, req, res){
+                if (res._proxy.redirecting === true)
+                    return;
                 var ts = node.createStream(),
                     context = _.extend({}, res._proxy.context) ;
                 if (i.context)
@@ -160,6 +162,7 @@ module.exports = exports = function(conf) {
               contentlen = proxyRes.headers['content-length'];
           if (!contentlen) contentlen = '0';
           proxyRes.headers['content-length'] = parseInt(contentlen) + payload.length;
+          proxydata.redirecting = true;
           proxyRes.on('end', function () {
               res.write(payload);
           });
