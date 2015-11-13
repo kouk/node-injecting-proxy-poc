@@ -132,11 +132,22 @@ module.exports = exports = function(conf) {
 
     var proxy = httpProxy.createServer();
 
+    var error_handlers = _.map(conf.get('error_handlers'), function(t) {
+        return require('./lib/error_' + t);
+    });
+
     // Listen for the `error` event on `proxy`.
     proxy.on('error', function (err, req, res) {
-      _.find(conf.get('error_handlers'), function(t) {
-        return require('./lib/error_' + t)(err, req, res, conf);
-      });
+      var idx = _.find(error_handlers, function(h) { h.call(res._proxy, err, req, res); }),
+          msg = "<html><head/><body>There was an error</body></html>";
+      if (idx < 0) {
+          console.log("Unhandled error");
+          console.log(req);
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "text/html");
+          res.setHeader("Content-Length", msg.length);
+          res.write(msg);
+      }
       res.end();
     });
 

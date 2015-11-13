@@ -38,7 +38,6 @@ module.exports = exports = function(overrides) {
         'proto_separator': '-',
         'mask_redirect': false,
         'context': {},
-        'pages': {},
         'targets': [ 'cookie', 'base32' ],
         'redirects': {},
         "error_handlers": [
