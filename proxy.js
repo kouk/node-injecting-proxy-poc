@@ -170,11 +170,9 @@ module.exports = exports = function(conf) {
         var newurl = res._proxy.handle_redirect(proxyRes);
         if (newurl && proxyopts.mask_redirect) {
           var payload = '<script type="text/javascript">window.location="' + newurl + '";</script>';
-              contentlen = proxyRes.headers['content-length'];
-          if (!contentlen) contentlen = '0';
-          res.setHeader('content-length', payload.length);
-          res.setHeader('content-type', 'text/html');
-          proxyRes.pipe = function(res) { res.write(payload);  res.end();};
+          proxyRes.headers['content-length'] = payload.length;
+          proxyRes.headers['content-type'] = 'text/html';
+          proxyRes.pipe = function(res) {res.write(payload);  res.end();};
         }
         if (hdrs['set-cookie'] !== undefined)
           hdrs['set-cookie'] = _.map(hdrs['set-cookie'], proxydata.mangle_outgoing_cookie, proxydata);
