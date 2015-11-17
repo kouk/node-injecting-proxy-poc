@@ -59,6 +59,8 @@ module.exports = exports = function(conf) {
         selects.push({
             query: i.select,
             func: function(node, req, res){
+                if (res._proxy.redirecting === true)
+                    return;
                 var ts = node.createStream(),
                     context = _.extend({}, res._proxy.context) ;
                 if (i.context)
@@ -130,11 +132,22 @@ module.exports = exports = function(conf) {
 
     var proxy = httpProxy.createServer();
 
+    var error_handlers = _.map(conf.get('error_handlers'), function(t) {
+        return require('./lib/error_' + t);
+    });
+
     // Listen for the `error` event on `proxy`.
     proxy.on('error', function (err, req, res) {
-      _.find(conf.get('error_handlers'), function(t) {
-        return require('./lib/error_' + t)(err, req, res, conf);
-      });
+      var idx = _.find(error_handlers, function(h) { h.call(res._proxy, err, req, res); }),
+          msg = "<html><head/><body>There was an error</body></html>";
+      if (idx < 0) {
+          console.log("Unhandled error");
+          console.log(req);
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "text/html");
+          res.setHeader("Content-Length", msg.length);
+          res.write(msg);
+      }
       res.end();
     });
 
@@ -155,10 +168,12 @@ module.exports = exports = function(conf) {
             delete hdrs[h.toLowerCase()];
         });
         var newurl = res._proxy.handle_redirect(proxyRes);
-        if (newurl && proxyopts.mask_redirect)
-          proxyRes.on('end', function () {
-              res.write('<script type="text/javascript">window.location="' + newurl + '";</script>');
-          });
+        if (newurl && proxyopts.mask_redirect) {
+          var payload = '<script type="text/javascript">window.location="' + newurl + '";</script>';
+          proxyRes.headers['content-length'] = payload.length;
+          proxyRes.headers['content-type'] = 'text/html';
+          proxyRes.pipe = function(res) {res.write(payload);  res.end();};
+        }
         if (hdrs['set-cookie'] !== undefined)
           hdrs['set-cookie'] = _.map(hdrs['set-cookie'], proxydata.mangle_outgoing_cookie, proxydata);
     });

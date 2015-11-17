@@ -37,7 +37,9 @@ describe('app.listen()', function(){
         conf = mkconf({
             timeout: 100,
             mask_redirect: false,
-            templates: {error_page: _.template('foo')}
+            context: {
+              error_page_url: "http://foo/bar"
+            }
         }),
         server = proxy(conf),
         couchdb = nock('http://' + target)
